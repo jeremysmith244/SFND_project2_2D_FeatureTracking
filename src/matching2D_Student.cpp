@@ -157,8 +157,8 @@ void detKeypointsHarris(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis
     // Detector parameters
     int blockSize = 2;     // for every pixel, a blockSize × blockSize neighborhood is considered
     int apertureSize = 3;  // aperture parameter for Sobel operator (must be odd)
-    int minResponse = 100; // minimum value for a corner in the 8bit scaled response matrix
-    double k = 0.04;       // Harris parameter (see equation for details)
+    int minResponse = 65; // minimum value for a corner in the 8bit scaled response matrix
+    double k = 0.03;       // Harris parameter (see equation for details)
 
     // Detect Harris corners and normalize output
     cv::Mat dst, dst_norm, dst_norm_scaled;
@@ -222,7 +222,7 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
      cv::Ptr<cv::FeatureDetector> detector;
     if (detectorType.compare("FAST") == 0)
     {
-        int threshold = 30;   // difference between intensity of the central pixel and pixels of a circle around this pixel
+        int threshold = 40;   // difference between intensity of the central pixel and pixels of a circle around this pixel
         bool bNMS = true;     // perform non-maxima suppression on keypoints
         cv::FastFeatureDetector::DetectorType type = cv::FastFeatureDetector::TYPE_9_16; // TYPE_9_16, TYPE_7_12, TYPE_5_8
         detector = cv::FastFeatureDetector::create(threshold, bNMS, type);

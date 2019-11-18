@@ -51,6 +51,10 @@ int main(int argc, const char *argv[])
         imgNumber << setfill('0') << setw(imgFillWidth) << imgStartIndex + imgIndex;
         string imgFullFilename = imgBasePath + imgPrefix + imgNumber.str() + imgFileType;
 
+        cout << std::endl << std::string(20, '#') << std::endl;
+        cout << "Processing image : " << imgFullFilename << std::endl;
+        cout << std::string(20, '#') << std::endl << std::endl << std::endl;
+
         // load image from file and convert to grayscale
         cv::Mat img, imgGray;
         img = cv::imread(imgFullFilename);
@@ -71,7 +75,7 @@ int main(int argc, const char *argv[])
 
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-        string detectorType = "AKAZE";
+        string detectorType = "FAST";
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.3 -> only keep keypoints on the preceding vehicle
@@ -136,15 +140,13 @@ int main(int argc, const char *argv[])
         //// -> BRIEF, ORB, FREAK, AKAZE, SIFT
 
         cv::Mat descriptors;
-        string descriptorType = "AKAZE"; // BRIEF, ORB, FREAK, AKAZE, SIFT
+        string descriptorType = "BRIEF"; // BRIEF, ORB, FREAK, AKAZE, SIFT
         descKeypoints(frame.keypoints, frame.cameraImg, descriptors, descriptorType);
         //// EOF STUDENT ASSIGNMENT
 
         // push descriptors for current frame to end of data buffer
         frame.descriptors = descriptors;
         dataBuffer.write(frame);
-
-        cout << "Data buffer is: " << dataBuffer.getSize() << std::endl;
 
         cout << "#3 : EXTRACT DESCRIPTORS done" << endl;
 
