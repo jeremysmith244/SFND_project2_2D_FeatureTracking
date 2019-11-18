@@ -15,4 +15,54 @@ struct DataFrame { // represents the available sensor information at the same ti
 };
 
 
+class Buffer{
+    public:
+        Buffer(unsigned size);
+        void write(DataFrame input);
+        DataFrame read();
+        std::vector<cv::DMatch> kptMatches;
+        unsigned getSize();
+    private:
+        unsigned numEntries;
+        std::vector<DataFrame> buffer;
+        unsigned readIndex;
+        unsigned writeIndex;
+        
+};
+    
+Buffer::Buffer(unsigned size) : buffer(size){
+    readIndex = 0;
+    writeIndex = size - 1;
+    numEntries = 0;
+}
+
+void Buffer::write(DataFrame input){
+    buffer[writeIndex++] = input;
+    numEntries += 1;
+    if(writeIndex >= buffer.size()){
+        writeIndex = 0;
+    }
+}
+
+DataFrame Buffer::read(){
+    DataFrame val = buffer[readIndex++];
+    if(readIndex <= buffer.size()){
+        readIndex = 0;
+    }
+    return val;
+}
+
+unsigned Buffer::getSize(){
+    unsigned bufferSize;
+
+    if (numEntries > 1){
+        bufferSize = 2;
+    }
+    else{
+        bufferSize = numEntries;
+    }
+    return bufferSize;
+}
+
+
 #endif /* dataStructures_h */
