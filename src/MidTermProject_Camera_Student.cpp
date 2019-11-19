@@ -22,7 +22,11 @@ using namespace std;
 int main(int argc, const char *argv[])
 {
 
-    /* INIT VARIABLES AND DATA STRUCTURES */
+    /* INIT VARIABLES AND DATA STRUCTURES */;
+    ofstream myfile;
+    myfile.open ("output.txt");
+    myfile << argv[0] << " " << argv[1] << std::endl;
+
 
     // data location
     string dataPath = "../";
@@ -75,7 +79,7 @@ int main(int argc, const char *argv[])
 
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-        string detectorType = "FAST";
+        string detectorType = argv[0];
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.3 -> only keep keypoints on the preceding vehicle
@@ -99,19 +103,20 @@ int main(int argc, const char *argv[])
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
         //// -> HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
 
+        std::vector<float> outputs;
         if (detectorType.compare("SHITOMASI") == 0)
         {
-            detKeypointsShiTomasi(keypoints, croppedImage, false);
+            detKeypointsShiTomasi(keypoints, croppedImage, outputs);
         }
         else if (detectorType.compare("HARRIS") == 0)
         {
-            detKeypointsHarris(keypoints, croppedImage, false);
+            detKeypointsHarris(keypoints, croppedImage, outputs);
         }
         else
         {
-            detKeypointsModern(keypoints, croppedImage, detectorType, false);
+            detKeypointsModern(keypoints, croppedImage, detectorType, outputs);
         }
-        
+
         //// EOF STUDENT ASSIGNMENT
 
         // optional : limit number of keypoints (helpful for debugging and learning)
@@ -140,8 +145,8 @@ int main(int argc, const char *argv[])
         //// -> BRIEF, ORB, FREAK, AKAZE, SIFT
 
         cv::Mat descriptors;
-        string descriptorType = "BRIEF"; // BRIEF, ORB, FREAK, AKAZE, SIFT
-        descKeypoints(frame.keypoints, frame.cameraImg, descriptors, descriptorType);
+        string descriptorType = argv[1]; // BRIEF, ORB, FREAK, AKAZE, SIFT
+        descKeypoints(frame.keypoints, frame.cameraImg, descriptors, descriptorType, outputs);
         //// EOF STUDENT ASSIGNMENT
 
         // push descriptors for current frame to end of data buffer
@@ -159,7 +164,7 @@ int main(int argc, const char *argv[])
             DataFrame frame2 = dataBuffer.read();
     
             vector<cv::DMatch> matches;
-            string matcherType = "MAT_FLANN";        // MAT_BF, MAT_FLANN
+            string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
             string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG
             string selectorType = "SEL_KNN";       // SEL_NN, SEL_KNN
 
@@ -169,12 +174,16 @@ int main(int argc, const char *argv[])
 
             matchDescriptors(frame1.keypoints, frame2.keypoints,
                              frame1.descriptors, frame2.descriptors,
-                             matches, descriptorType, matcherType, selectorType);
+                             matches, descriptorType, matcherType, selectorType, outputs);
 
             //// EOF STUDENT ASSIGNMENT
 
             // store matches in current data frame
             dataBuffer.kptMatches = matches;
+            for (auto it=outputs.begin(); it!=outputs.end(); ++it){
+                myfile << *it << ",";
+            }
+            myfile << std::endl;
 
             cout << "#4 : MATCH KEYPOINT DESCRIPTORS done" << endl;
 
@@ -199,6 +208,7 @@ int main(int argc, const char *argv[])
         }
 
     } // eof loop over all images
+    myfile.close();
 
     return 0;
 }
