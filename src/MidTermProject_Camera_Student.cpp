@@ -19,13 +19,13 @@
 using namespace std;
 
 /* MAIN PROGRAM */
-int main(int argc, const char *argv[])
+int main(int argc, char* argv[])
 {
 
     /* INIT VARIABLES AND DATA STRUCTURES */;
     ofstream myfile;
     myfile.open ("output.txt");
-    myfile << argv[0] << " " << argv[1] << std::endl;
+    myfile << argv[1] << " " << argv[2] << std::endl;
 
 
     // data location
@@ -79,7 +79,7 @@ int main(int argc, const char *argv[])
 
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-        string detectorType = argv[0];
+        string detectorType = argv[1];
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.3 -> only keep keypoints on the preceding vehicle
@@ -145,7 +145,7 @@ int main(int argc, const char *argv[])
         //// -> BRIEF, ORB, FREAK, AKAZE, SIFT
 
         cv::Mat descriptors;
-        string descriptorType = argv[1]; // BRIEF, ORB, FREAK, AKAZE, SIFT
+        string descriptorType = argv[2]; // BRIEF, ORB, FREAK, AKAZE, SIFT
         descKeypoints(frame.keypoints, frame.cameraImg, descriptors, descriptorType, outputs);
         //// EOF STUDENT ASSIGNMENT
 
