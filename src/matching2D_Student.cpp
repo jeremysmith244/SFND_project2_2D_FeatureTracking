@@ -30,8 +30,12 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     // perform matching task
     if (selectorType.compare("SEL_NN") == 0)
     { // nearest neighbor (best match)
-
+        double t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
         matcher->match(descSource, descRef, matches); // Finds the best match for each descriptor in desc1
+        cout << " (NN) with n=" << matches.size() << " matches in " << 1000 * t / 1.0 << " ms" << endl;
+        output.push_back(matches.size());
+        output.push_back(1000 * t / 1.0);
+
     }
     else if (selectorType.compare("SEL_KNN") == 0)
     { 
@@ -106,6 +110,11 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
     if (descriptorType.compare("AKAZE") == 0){
         cout << "AKAZE descriptors can only be used with AKAZE keypoints, recomputing keypoints with AKAZE"<<std::endl;
         extractor->detectAndCompute(img, cv::noArray(), keypoints, descriptors);
+    }
+    else if (descriptorType.compare("SIFT") == 0){
+        cv::Mat cv32;
+        cv32.convertTo(cv32, CV_32F);
+        extractor->compute(cv32, keypoints, descriptors);
     }
     else{
         extractor->compute(img, keypoints, descriptors);
