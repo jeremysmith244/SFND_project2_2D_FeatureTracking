@@ -14,7 +14,7 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
 
     if (matcherType.compare("MAT_BF") == 0)
     {
-        int normType = cv::NORM_HAMMING;
+        int normType = cv::NORM_L2;
         matcher = cv::BFMatcher::create(normType, crossCheck);
     }
     else if (matcherType.compare("MAT_FLANN") == 0)
@@ -30,8 +30,9 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     // perform matching task
     if (selectorType.compare("SEL_NN") == 0)
     { // nearest neighbor (best match)
-        double t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+        double t = (double)cv::getTickCount();
         matcher->match(descSource, descRef, matches); // Finds the best match for each descriptor in desc1
+        t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
         cout << " (NN) with n=" << matches.size() << " matches in " << 1000 * t / 1.0 << " ms" << endl;
         output.push_back(matches.size());
         output.push_back(1000 * t / 1.0);
@@ -39,10 +40,11 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     }
     else if (selectorType.compare("SEL_KNN") == 0)
     { 
+        double t = (double)cv::getTickCount();
         vector<vector<cv::DMatch>> knn_matches;
         matcher->knnMatch(descSource, descRef, knn_matches, 2);
         
-        double t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+        t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
         cout << " (KNN) with n=" << knn_matches.size() << " matches in " << 1000 * t / 1.0 << " ms" << endl;
         output.push_back(knn_matches.size());
         output.push_back(1000 * t / 1.0);
@@ -113,8 +115,8 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
     }
     else if (descriptorType.compare("SIFT") == 0){
         cv::Mat cv32;
-        cv32.convertTo(cv32, CV_32F);
-        extractor->compute(cv32, keypoints, descriptors);
+        img.convertTo(cv32, CV_32F);
+        extractor->compute(img, keypoints, descriptors);
     }
     else{
         extractor->compute(img, keypoints, descriptors);
